@@ -2,22 +2,21 @@ const { nanoid } = require("nanoid");
 const products = require("../static/products");
 
 const addProduct = (request, h) => {
-  const { name } = request.payload;
+  const payload = request.payload;
   const id = nanoid();
-
   const productObj = {
-    name: name,
-    id: id,
+    productName: payload.productName,
+    productId: id,
   };
   products.push(productObj);
-  const isSuccess = products.filter((product) => product.id === id).length > 0;
+  const isSuccess = products.filter((product) => product.productId === id).length > 0;
 
   if (isSuccess) {
     const response = h.response({
       status: "success",
       message: "Product successfully added",
       data: {
-        ...productObj,
+        productId: id,
       },
     });
     response.code(201);
@@ -38,10 +37,10 @@ const getAllProducts = () => ({
   },
 });
 const getProductById = (request, h) => {
-  const { id } = request.params;
-  const product = products.filter((p) => p.id === id)[0];
+  const id = request.params.id;
+  const product = products.filter((p) => p.productId === id)[0];
   console.log(id)
-  console.log(products.filter((p) => p.id === id))
+  console.log(products.filter((p) => p.productId === id))
   console.log(products)
   if (product !== undefined) {
     return {
@@ -60,14 +59,17 @@ const getProductById = (request, h) => {
   return response;
 };
 const editProduct = (request, h) => {
-  const {id} = request.params.id
-  const {name} = request.payload
-  const index = products.findIndex((product) =>product.id === id);
- 
+  const id = request.params.id
+  console.log(request.params.id)
+  const payload = request.payload
+  const index = products.findIndex((product) =>product.productId === id);
+  console.log(index)
+  
   if (index !== -1) {
+    console.log(products[index])
     products[index] = {
       ...products[index],
-      name
+      productName: payload.productName
     };
  
     const response = h.response({
@@ -86,9 +88,8 @@ const editProduct = (request, h) => {
   return response;
 };
 const deleteProduct = (request, h) => {
-  const {id} = request.params.id
-  const {name} = request.payload
-  const index = products.findIndex((product) =>product.id === id);
+  const params = request.params
+  const index = products.findIndex((product) =>product.productId === params.id);
  
   if (index !== -1) {
     products.splice(index, 1);
@@ -103,7 +104,7 @@ const deleteProduct = (request, h) => {
  
   const response = h.response({
     status: 'fail',
-    message: 'Failed to edit product. Product not found',
+    message: 'Failed to delete product. Product not found',
   });
   response.code(404);
   return response;
