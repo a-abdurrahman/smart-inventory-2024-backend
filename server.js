@@ -1,14 +1,12 @@
 'use strict';
+require('dotenv').config()
 require('@hapi/hoek')
 const Hapi = require('@hapi/hapi');
 const { routes } = require('./src/route/routes');
 
 const init = async () => {
     
-    const server = Hapi.Server({
-        host: 'localhost',
-        port: 1234,
-    })
+    const server = Hapi.Server(process.env.HAPI_HOST)
     server.route(routes);
 
     await server.start();
