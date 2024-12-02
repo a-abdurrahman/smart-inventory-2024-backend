@@ -8,8 +8,8 @@ const ClientError = require('./src/exceptions/ClientError')
 const init = async () => {
     
     const server = Hapi.Server({
-        host: process.env.HAPI_HOST,
-        port: process.env.HAPI_PORT,
+        host: process.env.HOST,
+        port: process.env.PORT,
     })
     server.route(routes);
     server.ext('onPreResponse', (request, h) => {
