@@ -14,10 +14,13 @@ class AuthenticationsHandler {
     this._validator.validatePostAuthenticationPayload(request.payload);
 
     const { username, email, password } = request.payload;
-    const { id, businessId } = await this._ownersService.verifyUserCredential({ username, email, password });
+    console.log({ username, email, password })
+    const { id, businessId } = await this._ownersService.verifyOwnersCredential({ username, email, password });
+    console.log({ id, businessId })
 
     const accessToken = this._tokenManager.generateAccessToken({ id, businessId });
     const refreshToken = this._tokenManager.generateRefreshToken({ id, businessId });
+    console.log({ accessToken, refreshToken })
 
     await this._authenticationsService.addRefreshToken(refreshToken);
 
@@ -29,6 +32,8 @@ class AuthenticationsHandler {
         refreshToken,
       },
     });
+    
+    return response;
   }
 
   async putAuthenticationHandler(request, h) {

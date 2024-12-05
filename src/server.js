@@ -2,31 +2,64 @@
 require("dotenv").config();
 require("@hapi/hoek");
 const Hapi = require("@hapi/hapi");
+const Jwt = require('@hapi/jwt');
+
 const { routes } = require("./route/routes");
 const ClientError = require("./exceptions/ClientError");
 
+const owners = require("./api/owners");
 const OwnersService = require("./services/postgres/OwnersService");
 const OwnersValidator = require("./validator/owners");
+
+const businesses = require("./api/businesses");
+const BusinessesService = require("./services/postgres/BusinessesService");
 
 const authentications = require("./api/authentications");
 const AuthenticationsService = require("./services/postgres/AuthenticationsService");
 const TokenManager = require("./tokenize/TokenManager");
 const AuthenticationsValidator = require("./validator/authentications");
 
+
 const init = async () => {
   const ownersService = new OwnersService();
+  const businessesService = new BusinessesService();
   const authenticationsService = new AuthenticationsService();
 
   const server = Hapi.Server({
     host: process.env.HOST,
     port: process.env.PORT,
   });
+
+  await server.register([
+    {
+      plugin: Jwt,
+    },
+  ]);
+
+  server.auth.strategy('smart_inv_jwt', 'jwt', {
+    keys: process.env.ACCESS_TOKEN_KEY,
+    verify: {
+      aud: false,
+      iss: false,
+      sub: false,
+      maxAgeSec: process.env.ACCESS_TOKEN_AGE,
+    },
+    validate: (artifacts) => ({
+      isValid: true,
+      credentials: {
+        id: artifacts.decoded.payload.id,
+        businessId: artifacts.decoded.payload.businessId
+      },
+    }),
+  });
+
   await server.register([
     {
       plugin: owners,
       options: {
         service: ownersService,
         validator: OwnersValidator,
+        businessesService: businessesService,
       },
     },
     {
@@ -36,6 +69,12 @@ const init = async () => {
         ownersService: ownersService,
         tokenManager: TokenManager,
         validator: AuthenticationsValidator,
+      },
+    },
+    {
+      plugin: businesses,
+      options: {
+        businessesService:businessesService,
       },
     },
   ]);

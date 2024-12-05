@@ -1,22 +1,25 @@
 const ClientError = require('../../exceptions/ClientError');
  
 class OwnersHandler {
-  constructor(service, validator) {
+  constructor(service, validator, businessesService) {
     this._service = service;
     this._validator = validator;
+    this._businessesService = businessesService;
 
-    this.postOwnersHandler = this.postOwnersHandler.bind(this);
+    this.postOwnerHandler = this.postOwnerHandler.bind(this);
   }
  
-  async postOwnersHandler(request, h) {
+  async postOwnerHandler(request, h) {
     this._validator.validateOwnersPayload(request.payload);
-    const { username, email, password } = request.payload;
- 
-    const ownerId = await this._service.addUser({ username, email, password });
+    const { businessName, username, email, password } = request.payload;
+    console.log({ businessName, username, email, password })
+    const { ownerId, businessId } = await this._service.addOwner({ username, email, password });
+    console.log({ ownerId, businessId })
+    await this._businessesService.addNewBusiness({ ownerId:ownerId, businessName:businessName, businessId:businessId })
  
     const response = h.response({
       status: 'success',
-      message: 'Owner successfully added',
+      message: 'Owner and business successfully added',
       data: {
         ownerId,
       },
@@ -25,3 +28,5 @@ class OwnersHandler {
     return response;
   }
 }
+
+module.exports = OwnersHandler;

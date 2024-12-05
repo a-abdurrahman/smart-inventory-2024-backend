@@ -2,7 +2,7 @@ const routes = (handler) => [
     {
       method: 'POST',
       path: '/owners',
-      handler: handler.postUserHandler,
+      handler: handler.postOwnerHandler,
     },
   ];
    

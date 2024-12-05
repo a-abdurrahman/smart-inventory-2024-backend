@@ -55,7 +55,7 @@ class OwnersService {
     const businessId = `business-${nanoid(16)}`
     const hashedPassword = await bcrypt.hash(password, 10);
     const query = {
-      text: 'INSERT INTO owners VALUES($1, $2, $3, $4, $5) RETURNING id',
+      text: 'INSERT INTO owners VALUES($1, $2, $3, $4, $5) RETURNING id, business_id',
       values: [id, username, email, hashedPassword, businessId],
     };
  
@@ -63,10 +63,10 @@ class OwnersService {
     if (!result.rows.length) {
       throw new InvariantError('Failed to add user');
     }
-    return result.rows[0].id;
+    return { ownerId:result.rows[0].id, businessId: result.rows[0].business_id };
   }
 
-  async verifyOwnersCredential({ username, email, password }) {
+  async verifyOwnersCredential({ username = null, email = null, password }) {
     const query = {
       text: 'SELECT id, password, business_id FROM owners WHERE username = $1 OR email = $2',
       values: [username, email],
