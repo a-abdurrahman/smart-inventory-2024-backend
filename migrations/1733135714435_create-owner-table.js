@@ -18,8 +18,8 @@ exports.up = (pgm) => {
       notNull: true,
     },
     password: {
-        type: 'TEXT',
-        notNull: true,
+      type: 'TEXT',
+      notNull: true,
     },
     business_id: {
       type: 'VARCHAR(50)',
