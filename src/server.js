@@ -2,7 +2,7 @@
 require("dotenv").config();
 require("@hapi/hoek");
 const Hapi = require("@hapi/hapi");
-const Jwt = require('@hapi/jwt');
+const Jwt = require("@hapi/jwt");
 
 const { routes } = require("./route/routes");
 const ClientError = require("./exceptions/ClientError");
@@ -19,11 +19,15 @@ const AuthenticationsService = require("./services/postgres/AuthenticationsServi
 const TokenManager = require("./tokenize/TokenManager");
 const AuthenticationsValidator = require("./validator/authentications");
 
+const products = require("./api/products");
+const ProductsService = require("./services/postgres/ProductsService");
+const ProductsValidator = require("./validator/products");
 
 const init = async () => {
   const ownersService = new OwnersService();
   const businessesService = new BusinessesService();
   const authenticationsService = new AuthenticationsService();
+  const productsService = new ProductsService();
 
   const server = Hapi.Server({
     host: process.env.HOST,
@@ -36,7 +40,7 @@ const init = async () => {
     },
   ]);
 
-  server.auth.strategy('smart_inv_jwt', 'jwt', {
+  server.auth.strategy("smart_inv_jwt", "jwt", {
     keys: process.env.ACCESS_TOKEN_KEY,
     verify: {
       aud: false,
@@ -48,7 +52,7 @@ const init = async () => {
       isValid: true,
       credentials: {
         id: artifacts.decoded.payload.id,
-        businessId: artifacts.decoded.payload.businessId
+        businessId: artifacts.decoded.payload.businessId,
       },
     }),
   });
@@ -74,11 +78,17 @@ const init = async () => {
     {
       plugin: businesses,
       options: {
-        businessesService:businessesService,
+        businessesService: businessesService,
+      },
+    },
+    {
+      plugin: products,
+      options: {
+        service: productsService,
+        validator: ProductsValidator,
       },
     },
   ]);
-  server.route(routes);
   server.ext("onPreResponse", (request, h) => {
     const { response } = request;
 
