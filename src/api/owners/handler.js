@@ -1,11 +1,18 @@
 const ClientError = require("../../exceptions/ClientError");
 
 class OwnersHandler {
-  constructor(service, validator, inviteTokenManager, businessesService) {
+  constructor(
+    service,
+    validator,
+    inviteTokenManager,
+    businessesService,
+    usersService
+  ) {
     this._service = service;
     this._validator = validator;
     this._inviteTokenManager = inviteTokenManager;
     this._businessesService = businessesService;
+    this._usersService = usersService;
 
     this.postOwnerHandler = this.postOwnerHandler.bind(this);
     this.getOwnerHandler = this.getOwnerHandler.bind(this);
@@ -15,6 +22,8 @@ class OwnersHandler {
   async postOwnerHandler(request, h) {
     this._validator.validateOwnersPayload(request.payload);
     const { businessName, username, email, password } = request.payload;
+    await this._usersService.verifyNewEmail(email)
+    await this._usersService.verifyNewUsername(username)
     console.log({ businessName, username, email, password });
     const { ownerId, businessId } = await this._service.addOwner({
       username,
@@ -41,6 +50,7 @@ class OwnersHandler {
   async getOwnerHandler(request, h) {
     const { id } = request.auth.credentials;
     const { username, email } = await this._service.getOwnerDetails({ id: id });
+    console.log({username, email})
     const response = h.response({
       status: "success",
       message: "Identity fetched successfully",
@@ -49,7 +59,7 @@ class OwnersHandler {
         email: email,
       },
     });
-    response.code(20);
+    response.code(200);
     return response;
   }
   async getOwnerTokenHandler(request, h) {

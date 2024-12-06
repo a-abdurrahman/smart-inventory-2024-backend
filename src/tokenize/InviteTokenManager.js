@@ -10,7 +10,7 @@ const InviteTokenManager = {
       const { payload } = artifacts.decoded;
       return payload;
     } catch (error) {
-      throw new InvariantError('Invite Token invalid');
+      throw new InvariantError('Invite token invalid');
     }
   },
 };

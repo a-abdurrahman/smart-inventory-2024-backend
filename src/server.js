@@ -10,7 +10,11 @@ const ClientError = require("./exceptions/ClientError");
 const owners = require("./api/owners");
 const OwnersService = require("./services/postgres/OwnersService");
 const OwnersValidator = require("./validator/owners");
-const InviteTokenManager = require('./tokenize/InviteTokenManager')
+const InviteTokenManager = require("./tokenize/InviteTokenManager");
+
+const users = require("./api/users");
+const UsersService = require("./services/postgres/UsersService");
+const UsersValidator = require("./validator/users");
 
 const businesses = require("./api/businesses");
 const BusinessesService = require("./services/postgres/BusinessesService");
@@ -26,6 +30,7 @@ const ProductsValidator = require("./validator/products");
 
 const init = async () => {
   const ownersService = new OwnersService();
+  const usersService = new UsersService();
   const businessesService = new BusinessesService();
   const authenticationsService = new AuthenticationsService();
   const productsService = new ProductsService();
@@ -66,6 +71,7 @@ const init = async () => {
         validator: OwnersValidator,
         inviteTokenManager: InviteTokenManager,
         businessesService: businessesService,
+        usersService: usersService,
       },
     },
     {
@@ -73,8 +79,18 @@ const init = async () => {
       options: {
         authenticationsService: authenticationsService,
         ownersService: ownersService,
+        usersService: usersService,
         tokenManager: TokenManager,
         validator: AuthenticationsValidator,
+      },
+    },
+    {
+      plugin: users,
+      options: {
+        service: usersService,
+        validator: UsersValidator,
+        inviteTokenManager: InviteTokenManager,
+        ownersService: ownersService,
       },
     },
     {
