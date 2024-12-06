@@ -4,7 +4,6 @@ require("@hapi/hoek");
 const Hapi = require("@hapi/hapi");
 const Jwt = require("@hapi/jwt");
 
-const { routes } = require("./route/routes");
 const ClientError = require("./exceptions/ClientError");
 
 const owners = require("./api/owners");
