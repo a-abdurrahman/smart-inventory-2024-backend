@@ -14,4 +14,11 @@ const mapDBToProducts = ({
   updatedAt: updated_at,
 });
 
-module.exports = mapDBToProducts;
+const mapDBToCustomers = ({ id, name, number, address, business_id }) => ({
+  id: id,
+  name: name,
+  number: number,
+  address: address,
+});
+
+module.exports = { mapDBToProducts, mapDBToCustomers };
