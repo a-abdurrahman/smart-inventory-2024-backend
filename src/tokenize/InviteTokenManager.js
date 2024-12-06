@@ -3,7 +3,7 @@ const InvariantError = require('../exceptions/InvariantError');
  
 const InviteTokenManager = {
   generateInviteToken: (payload) => Jwt.token.generate(payload, process.env.INVITE_TOKEN_KEY),
-  verifyRefreshToken: (inviteToken) => {
+  verifyInviteToken: (inviteToken) => {
     try {
       const artifacts = Jwt.token.decode(inviteToken);
       Jwt.token.verifySignature(artifacts, process.env.INVITE_TOKEN_KEY);

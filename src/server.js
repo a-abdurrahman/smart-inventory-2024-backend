@@ -10,6 +10,7 @@ const ClientError = require("./exceptions/ClientError");
 const owners = require("./api/owners");
 const OwnersService = require("./services/postgres/OwnersService");
 const OwnersValidator = require("./validator/owners");
+const InviteTokenManager = require('./tokenize/InviteTokenManager')
 
 const businesses = require("./api/businesses");
 const BusinessesService = require("./services/postgres/BusinessesService");
@@ -63,6 +64,7 @@ const init = async () => {
       options: {
         service: ownersService,
         validator: OwnersValidator,
+        inviteTokenManager: InviteTokenManager,
         businessesService: businessesService,
       },
     },
