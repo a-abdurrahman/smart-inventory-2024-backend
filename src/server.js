@@ -1,4 +1,5 @@
 "use strict";
+require('dotenv').config()
 const Hapi = require("@hapi/hapi");
 const Jwt = require("@hapi/jwt");
 
