@@ -1,6 +1,4 @@
 "use strict";
-require("dotenv").config();
-require("@hapi/hoek");
 const Hapi = require("@hapi/hapi");
 const Jwt = require("@hapi/jwt");
 
