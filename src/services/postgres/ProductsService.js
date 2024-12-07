@@ -3,7 +3,7 @@ const { nanoid } = require("nanoid");
 const InvariantError = require("../../exceptions/InvariantError");
 const NotFoundError = require("../../exceptions/NotFoundError");
 const AuthorizationError = require("../../exceptions/AuthorizationError");
-const mapDBToProducts = require("../../utils/mapDBToModel");
+const { mapDBToProducts } = require("../../utils/mapDBToModel");
 
 class ProductsService {
   constructor() {
@@ -51,7 +51,11 @@ class ProductsService {
     };
 
     const result = await this._pool.query(query);
-    return result.rows.map(mapDBToProducts);
+    const rows = result.rows;
+    console.log(rows);
+    console.log(typeof rows);
+    console.log(typeof mapDBToProducts);
+    return rows.map(mapDBToProducts);
   }
 
   async getProductById({ id }) {
